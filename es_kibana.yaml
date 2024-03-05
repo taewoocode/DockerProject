@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7
+    environment:
+      - node.name=single
+      - cluster.name=standalone
+      - discovery.type=single-node
+    volumes:
+      - data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - es-bridge
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.7
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=["http://211.183.3.100:9200"]
+    depends_on:
+      - es
+    networks:
+      - es-bridge
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+
+volumes:
+  data:
+    driver: local
+  db1:
+    driver: local
+networks:
+  es-bridge:
+    driver: overlay

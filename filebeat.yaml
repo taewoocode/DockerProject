@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.17.7
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.hostname == worker2
+          - node.hostname == worker3  # worker2 또는 worker3 노드에 배치
+    volumes:
+      - /path/to/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    networks:
+      - elastic
+    ports:
+      - "5044:5044"  # Filebeat에서 사용하는 포트
+
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:7.17.7
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == worker2
+          - node.hostname == worker3  # worker2 또는 worker3 노드에 배치
+    volumes:
+      - /path/to/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+    networks:
+      - elastic
+    ports:
+      - "5060:5060"  # Metricbeat에서 사용하는 포트
+
+networks:
+  elastic:
+    driver: overlay

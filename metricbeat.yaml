@@ -1,0 +1,26 @@
+metricbeat.config.modules:
+  reload.enabled: false
+  reload.period: 10s
+
+setup.dashboards.enabled: true
+setup.kibana.host: kibana:5601
+
+output.elasticsearch:
+  hosts: ['211.183.3.100:9200']
+
+metricbeat.modules:
+  - module: system
+    metricsets:
+      - cpu
+      - load
+      - memory
+      - network
+      - process
+      - process_summary
+      - uptime
+      - socket_summary
+    enabled: true
+    period: 10s
+    processes: ['.*']
+    cpu.metrics: ['percentages']
+    core.metrics: ['percentages']

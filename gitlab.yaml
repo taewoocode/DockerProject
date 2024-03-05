@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/gitlab-runner/config:/etc/gitlab-runner
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == worker1
+          - node.hostname == worker2
+          - node.hostname == worker3
+    environment:
+      - CI_SERVER_URL=<Your_GitLab_URL>
+      - REGISTRATION_TOKEN=<Your_Registration_Token>
+      - RUNNER_EXECUTOR=docker
+    networks:
+      - gitlab-network
+
+networks:
+  gitlab-network:
+    driver: overlay

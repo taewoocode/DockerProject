@@ -1,0 +1,52 @@
+services:
+  web:
+    image: wordpress
+    ports:
+      - "8001-8009:80"
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        constraints: [ node.labels.zone == A ]
+    restart: always
+    volumes:
+      - web_data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - db
+
+    networks:
+      - web_net
+
+  db:
+    image: mysql:5.7
+    ports:
+      - "33061-33069:3306"
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        constraints: [ node.labels.zone == A ]
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - web_net
+
+networks:
+  web_net: {}
+
+volumes:
+  db_data: {}
+
+  web_data: {}

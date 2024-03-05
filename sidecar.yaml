@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  sidecar:
+    image: your-sidecar-image:tag
+    deploy:
+      mode: global
+    networks:
+      - your_network
+
+networks:
+  your_network:
+    driver: overlay
+    attachable: true
+    ipam:
+      config:
+        - subnet: 211.183.3.0/24
+          gateway: 211.183.3.1
